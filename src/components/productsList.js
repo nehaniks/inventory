@@ -1,11 +1,18 @@
-import { getProducts, deleteProduct } from "../services/firebase";
+import {
+  getProducts,
+  getProductsOnDate,
+  deleteProduct,
+} from "../services/firebase";
+import { getProductsTotal } from "../services/getTotal";
 import { useEffect, useState } from "react";
 import AddProduct from "./addProduct";
+import Table from "./table";
 
 export default function ProductsList() {
-  // var products = [];
   var [products, setProducts] = useState(0);
   var [addProduct, setAddProduct] = useState(null);
+
+  var [totalProducts, setTotalProducts] = useState(0);
 
   const productObj = {
     Cost: 1,
@@ -23,6 +30,11 @@ export default function ProductsList() {
         return data;
       })
     );
+    setTotalProducts(
+      await getProductsTotal(products).then((data) => {
+        return data;
+      })
+    );
   }
 
   async function remove(pId) {
@@ -33,7 +45,8 @@ export default function ProductsList() {
 
   useEffect(() => {
     getProductsList();
-  }, [products]);
+    console.log(totalProducts);
+  }, []);
 
   return (
     <div>
@@ -49,32 +62,23 @@ export default function ProductsList() {
           {products === 0 ? (
             <div>No Products to Show</div>
           ) : (
+            // <Table products={products} />
             <table className="table table-hover table-responsive">
               <thead className="table-secondary">
                 <tr>
-                  <th scope="col">ID</th>
                   <th scope="col">Product Name</th>
-                  <th scope="col">Supplier</th>
-                  <th scope="col">Rate per unit</th>
                   <th scope="col">Quantity</th>
-                  <th scope="col">Unit</th>
                   <th scope="col">Cost</th>
-                  <th scope="col">Date</th>
                 </tr>
               </thead>
               <tbody>
-                {products.map((product) => {
+                {Array.from(totalProducts).map((product, index) => {
                   return (
-                    <tr key={product.PId}>
-                      <th scope="row">{product.PId}</th>
-                      <td>{product.ProductName}</td>
-                      <td>{product.Supplier}</td>
-                      <td>{product.Rate}</td>
+                    <tr key={index}>
+                      <th scope="row">{product.ProductName}</th>
                       <td>{product.Quantity}</td>
-                      <td>{product.Unit}</td>
                       <td>{product.Cost}</td>
-                      <td>{product.Date}</td>
-                      <td>
+                      {/* <td>
                         <button
                           className="btn btn-success"
                           onClick={() => setAddProduct(products[product.PId])}
@@ -89,7 +93,7 @@ export default function ProductsList() {
                         >
                           Delete
                         </button>
-                      </td>
+                      </td> */}
                     </tr>
                   );
                 })}

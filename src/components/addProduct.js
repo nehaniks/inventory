@@ -51,7 +51,7 @@ export default function AddProduct(props) {
     addNewProduct(
       pId,
       cost,
-      date.toLocaleDateString(),
+      date.toLocaleDateString("en-GB"),
       pName,
       supplier,
       rate,

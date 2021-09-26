@@ -4,10 +4,13 @@ import { getDatabase, ref, get, set, child } from "firebase/database";
 export async function getProducts() {
   const dbRef = ref(getDatabase());
 
-  const result = await get(child(dbRef, "products"))
+  var result = [];
+  await get(child(dbRef, "products"))
     .then((snapshot) => {
       if (snapshot.exists()) {
-        return snapshot.val();
+        snapshot.val().forEach((child) => {
+          result.push(child);
+        });
       } else {
         console.log("No data available");
         return [];
@@ -72,4 +75,29 @@ export async function deleteProduct(pId) {
     .catch((error) => {
       console.error(error);
     });
+}
+
+export async function getProductsOnDate(queryDate) {
+  const dbRef = ref(getDatabase());
+
+  var result = [];
+
+  await get(child(dbRef, "products"))
+    .then((snapshot) => {
+      if (snapshot.exists()) {
+        snapshot.val().forEach((child) => {
+          if (child.Date === queryDate) {
+            result.push(child);
+          }
+        });
+      } else {
+        console.log("No data available");
+        return [];
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+
+  return result;
 }
