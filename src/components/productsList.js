@@ -1,18 +1,18 @@
-import {
-  getProducts,
-  getProductsOnDate,
-  deleteProduct,
-} from "../services/firebase";
-import { getProductsTotal } from "../services/getTotal";
+import { getProducts, getTotal } from "../services/firebase";
 import { useEffect, useState } from "react";
 import AddProduct from "./addProduct";
-import Table from "./table";
+import ProductByName from "./productByName";
+import ProductBySupplier from "./productBySupplier";
+import DateProducts from "./dateProducts"
 
 export default function ProductsList() {
   var [products, setProducts] = useState(0);
   var [addProduct, setAddProduct] = useState(null);
+  var [prodName, setProdName] = useState("");
+  var [showSupp, setShowSupp]= useState(false)
+  var [showDate, setShowDate]= useState(false)
 
-  var [totalProducts, setTotalProducts] = useState(0);
+  var [total, setTotal] = useState(0);
 
   const productObj = {
     Cost: 1,
@@ -30,40 +30,65 @@ export default function ProductsList() {
         return data;
       })
     );
-    setTotalProducts(
-      await getProductsTotal(products).then((data) => {
+    setTotal(
+      await getTotal(products).then((data) => {
         return data;
       })
-    );
+    )
   }
 
-  async function remove(pId) {
-    deleteProduct(pId);
-    getProductsList(); // Maybe not needed CHECK AGAIN!!!!!!!!!!!!!!!
-    console.log(products);
-  }
+  const showProductByName = (pname) => {
+    setProdName(pname);
+  };
 
   useEffect(() => {
     getProductsList();
-    console.log(totalProducts);
-  }, []);
+  }, [products]);
+
+  if (prodName !== "") {
+    return <ProductByName productName={prodName} toggleProductName={setProdName} />;
+  }
+
+  if (showSupp) {
+    return <ProductBySupplier toggleSupplier={setShowSupp} />;
+  }
+
+  if (showDate) {
+    return <DateProducts toggleDate={setShowDate} />;
+  }
 
   return (
     <div>
       {addProduct === null ? (
         <>
-          <h1>Products Table</h1>
+        <div className="header-bar">
           <button
-            className="btn btn-primary btn-lg"
+            className="btn btn-primary btn-md"
             onClick={() => setAddProduct(productObj)}
           >
             Add New Product
           </button>
+
+          <button
+            className="btn btn-primary btn-md"
+            onClick={() => setShowSupp(true)}
+          >
+            View Products By Supplier
+          </button>
+
+          <button
+            className="btn btn-primary btn-md"
+            onClick={() => setShowDate(true)}
+          >
+            View Products By Date
+          </button>
+
+          <span>Total Cost: {total[1]}</span>
+          </div>
           {products === 0 ? (
             <div>No Products to Show</div>
           ) : (
-            // <Table products={products} />
-            <table className="table table-hover table-responsive">
+            <table className="table table-hover table-responsive container-md">
               <thead className="table-secondary">
                 <tr>
                   <th scope="col">Product Name</th>
@@ -72,28 +97,18 @@ export default function ProductsList() {
                 </tr>
               </thead>
               <tbody>
-                {Array.from(totalProducts).map((product, index) => {
+                {Array.from(products).map((product, index) => {
                   return (
                     <tr key={index}>
-                      <th scope="row">{product.ProductName}</th>
+                      <th
+                        scope="row"
+                        className="select"
+                        onClick={() => showProductByName(product.ProductName)}
+                      >
+                        {product.ProductName}
+                      </th>
                       <td>{product.Quantity}</td>
                       <td>{product.Cost}</td>
-                      {/* <td>
-                        <button
-                          className="btn btn-success"
-                          onClick={() => setAddProduct(products[product.PId])}
-                        >
-                          Add
-                        </button>
-                      </td>
-                      <td>
-                        <button
-                          className="btn btn-danger"
-                          onClick={() => remove(product.PId)}
-                        >
-                          Delete
-                        </button>
-                      </td> */}
                     </tr>
                   );
                 })}
@@ -102,7 +117,7 @@ export default function ProductsList() {
           )}
         </>
       ) : (
-        <AddProduct product={addProduct} toggleList={setAddProduct} />
+        <AddProduct toggleList={setAddProduct} />
       )}
     </div>
   );

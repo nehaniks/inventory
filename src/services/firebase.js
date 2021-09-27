@@ -4,12 +4,12 @@ import { getDatabase, ref, get, set, child } from "firebase/database";
 export async function getProducts() {
   const dbRef = ref(getDatabase());
 
-  var result = [];
+  var products = [];
   await get(child(dbRef, "products"))
     .then((snapshot) => {
       if (snapshot.exists()) {
         snapshot.val().forEach((child) => {
-          result.push(child);
+          products.push(child);
         });
       } else {
         console.log("No data available");
@@ -20,7 +20,22 @@ export async function getProducts() {
       console.error(error);
     });
 
-  return result;
+    var result = {};
+
+    Array.from(products).forEach((product) => {
+      if (result[product.ProductName]) {
+        result[product.ProductName]["Quantity"] += Number(product.Quantity);
+        result[product.ProductName]["Cost"] += Number(product.Cost);
+      } else {
+        result[product.ProductName] = {
+          ProductName: product.ProductName,
+          Quantity: Number(product.Quantity),
+          Cost: Number(product.Cost),
+        };
+      }
+    });
+  
+    return Object.values(result);
 }
 
 export async function getPId() {
@@ -39,7 +54,6 @@ export async function getPId() {
       console.error(error);
     });
 
-  // console.log(result);
   return result;
 }
 
@@ -100,4 +114,118 @@ export async function getProductsOnDate(queryDate) {
     });
 
   return result;
+}
+
+export async function getProductsByName(prodName) {
+  const dbRef = ref(getDatabase());
+
+  var result = [];
+
+  await get(child(dbRef, "products"))
+    .then((snapshot) => {
+      if (snapshot.exists()) {
+        snapshot.val().forEach((child) => {
+          if (child.ProductName === prodName) {
+            result.push(child);
+          }
+        });
+      } else {
+        console.log("No data available");
+        return [];
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+
+  return result;
+}
+
+export async function getProductsNameList() {
+  const dbRef = ref(getDatabase());
+
+  var result = [];
+
+  await get(child(dbRef, "products"))
+    .then((snapshot) => {
+      if (snapshot.exists()) {
+        snapshot.val().forEach((child) => {
+          if (!result.includes(child.ProductName)) {
+            result.push(child.ProductName);
+          }
+        });
+      } else {
+        console.log("No data available");
+        return [];
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+
+  return result;
+}
+
+export async function getSuppliersNameList() {
+  const dbRef = ref(getDatabase());
+
+  var result = [];
+
+  await get(child(dbRef, "products"))
+    .then((snapshot) => {
+      if (snapshot.exists()) {
+        snapshot.val().forEach((child) => {
+          if (!result.includes(child.Supplier)) {
+            result.push(child.Supplier);
+          }
+        });
+      } else {
+        console.log("No data available");
+        return [];
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+
+  return result;
+}
+
+export async function getSuppliersByName(suppName) {
+  const dbRef = ref(getDatabase());
+
+  var result = [];
+
+  await get(child(dbRef, "products"))
+    .then((snapshot) => {
+      if (snapshot.exists()) {
+        snapshot.val().forEach((child) => {
+          if (child.Supplier === suppName) {
+            result.push(child);
+          }
+        });
+      } else {
+        console.log("No data available");
+        return [];
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+
+  return result;
+}
+
+export async function getTotal(products) {
+    var result = {
+      Quantity: 0,
+      Cost: 0,
+    };
+
+    Array.from(products).forEach((product) => {
+        result["Quantity"] += Number(product.Quantity);
+        result["Cost"] += Number(product.Cost);
+    });
+  
+    return Object.values(result);
 }

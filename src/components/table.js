@@ -1,14 +1,24 @@
+import { useState } from "react";
 import { deleteProduct } from "../services/firebase";
-import { useEffect, useState } from "react";
+import EditProduct from "./editProduct";
 
 export default function Table(props) {
+  var [product, setProduct] = useState(null)
+
   async function remove(pId) {
     deleteProduct(pId);
   }
 
+  const edit = (prod) => {
+    setProduct(prod)
+  }
+
+  if (product !== null) {
+    return <EditProduct product={product} toggleEdit={setProduct} />;
+  }
+
   return (
     <div>
-      <h1>Products Table</h1>
       {props.products === 0 ? (
         <div>No Products to Show</div>
       ) : (
@@ -43,6 +53,12 @@ export default function Table(props) {
                       onClick={() => remove(product.PId)}
                     >
                       Delete
+                    </button>
+                    <button
+                      className="btn btn-success"
+                      onClick={() => edit(product)}
+                    >
+                      Edit
                     </button>
                   </td>
                 </tr>

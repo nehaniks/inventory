@@ -1,23 +1,19 @@
 import { useState } from "react";
-import { getPId, addNewProduct } from "../services/firebase";
+import { addNewProduct } from "../services/firebase";
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-export default function AddProduct(props) {
-  var pId;
+export default function EditProduct(props) {
+  var pId = props.product["PId"];
 
-  var [pName, setPName] = useState("");
-  var [supplier, setSupplier] = useState("");
-  var [rate, setRate] = useState(1);
-  var [quantity, setQuantity] = useState(1);
-  var [unit, setUnit] = useState("");
-  var [cost, setCost] = useState(1);
+  var [pName, setPName] = useState(props.product["ProductName"]);
+  var [supplier, setSupplier] = useState(props.product["Supplier"]);
+  var [rate, setRate] = useState(props.product["Rate"]);
+  var [quantity, setQuantity] = useState(props.product["Quantity"]);
+  var [unit, setUnit] = useState(props.product["Unit"]);
+  var [cost, setCost] = useState(props.product["Cost"]);
   var [date, setDate] = useState(new Date());
-
-  async function getProductId() {
-    pId = (await getPId()) + 1;
-  }
 
   const handleProductNameChange = (event) => {
     setPName(event.target.value);
@@ -59,8 +55,6 @@ export default function AddProduct(props) {
  }
 
   async function add() {
-    await getProductId();
-
     addNewProduct(
       pId,
       cost,
@@ -72,7 +66,7 @@ export default function AddProduct(props) {
       unit
     );
 
-    props.toggleList(null);
+    props.toggleEdit(null);
   }
 
   return (

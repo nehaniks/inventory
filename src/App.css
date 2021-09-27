@@ -2,8 +2,37 @@
   text-align: center;
 }
 
+.header-bar {
+  width: 100vw;
+  display: flex;
+  background-color: lightblue;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
 .container-sm {
   width: 60%;
+}
+
+.select {
+  cursor: pointer;
+}
+
+.capitalize {
+  text-transform: capitalize;
+}
+
+button {
+  margin: 10px 20px;
+}
+
+label {
+  font-weight: bolder;
+}
+
+span {
+  font-weight: bolder;
 }
 
 /* Popup style */
