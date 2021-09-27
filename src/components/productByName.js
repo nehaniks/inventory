@@ -38,7 +38,7 @@ export default function ProductByName(props){
     useEffect(() => {   
       getProductsList();
 
-    },[products]);
+    });
   
     return (
       <div>

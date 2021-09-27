@@ -39,7 +39,7 @@ export default function ProductBySupplier(props){
     useEffect(() => {   
       getProductsList();
 
-    },[products]);
+    });
   
     return (
       <div>

@@ -33,7 +33,7 @@ export default function DateProducts(props) {
   useEffect(() => {
     getProductsList();
 
-  },[products]);
+  });
 
   return (
     <div>
