@@ -43,7 +43,7 @@ export default function ProductsList() {
 
   useEffect(() => {
     getProductsList();
-  }, [products]);
+  });
 
   if (prodName !== "") {
     return <ProductByName productName={prodName} toggleProductName={setProdName} />;
